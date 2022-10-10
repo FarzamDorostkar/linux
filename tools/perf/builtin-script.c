@@ -88,7 +88,7 @@ static char			**dlargv;
 unsigned int scripting_max_stack = PERF_MAX_STACK_DEPTH;
 
 enum perf_output_field {
-	PERF_OUTPUT_COMM            = 1ULL << 0,
+	PERF_OUTPUT_COMM            = 1ULL << 0,	/*@farzam: left shift 1ULL (unsigned long long) by 0 = 1*/
 	PERF_OUTPUT_TID             = 1ULL << 1,
 	PERF_OUTPUT_PID             = 1ULL << 2,
 	PERF_OUTPUT_TIME            = 1ULL << 3,
@@ -223,7 +223,7 @@ static struct {
 			      PERF_OUTPUT_CPU | PERF_OUTPUT_TIME |
 			      PERF_OUTPUT_EVNAME | PERF_OUTPUT_IP |
 			      PERF_OUTPUT_SYM | PERF_OUTPUT_SYMOFFSET |
-			      PERF_OUTPUT_DSO | PERF_OUTPUT_PERIOD,
+			      PERF_OUTPUT_DSO | PERF_OUTPUT_PERIOD,	/*@farzam: OR operation encapsulates information about output fields*/
 
 		.invalid_fields = PERF_OUTPUT_TRACE | PERF_OUTPUT_BPF_OUTPUT,
 	},
@@ -841,7 +841,7 @@ static int perf_sample__fprintf_start(struct perf_script *script,
 		if (reltime) {
 			if (!initial_time)
 				initial_time = sample->time;
-			t = sample->time - initial_time;
+			t = sample->time - initial_time;	/*@farzam: relative to the initial time*/
 		} else if (deltatime) {
 			if (previous_time)
 				t = sample->time - previous_time;

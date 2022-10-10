@@ -1368,7 +1368,7 @@ void itrace_synth_opts__set_default(struct itrace_synth_opts *synth_opts,
 {
 	synth_opts->branches = true;
 	synth_opts->transactions = true;
-	synth_opts->ptwrites = true;
+	synth_opts->ptwrites = true;	/*@farzam: "Add itrace option to output ptwrite events" */
 	synth_opts->pwr_events = true;
 	synth_opts->other_events = true;
 	synth_opts->intr_events = true;
@@ -1510,7 +1510,7 @@ int itrace_do_parse_synth_opts(struct itrace_synth_opts *synth_opts,
 			synth_opts->transactions = true;
 			break;
 		case 'w':
-			synth_opts->ptwrites = true;
+			synth_opts->ptwrites = true;	/*@farzam: "Add itrace option to output ptwrite events" */
 			break;
 		case 'p':
 			synth_opts->pwr_events = true;

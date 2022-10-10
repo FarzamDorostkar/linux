@@ -111,14 +111,14 @@ enum itrace_period_type {
  * @log_minus_flags: flags to affect what is logged
  * @quick: quicker (less detailed) decoding
  */
-struct itrace_synth_opts {
+struct itrace_synth_opts {	/*@farzam: itrace synthesize options*/
 	bool			set;
 	bool			default_no_sample;
 	bool			inject;
 	bool			instructions;
 	bool			branches;
 	bool			transactions;
-	bool			ptwrites;
+	bool			ptwrites;	/*@farzam: "Add itrace option to output ptwrite events" */
 	bool			pwr_events;
 	bool			other_events;
 	bool			intr_events;
