@@ -223,7 +223,7 @@ struct intel_pt_queue {
 
 static void intel_pt_dump(struct intel_pt *pt __maybe_unused,
 			  unsigned char *buf, size_t len)
-{
+{	/*farzam: buf contains the whole (len bytes) pt trace data*/
 	struct intel_pt_pkt packet;
 	size_t pos = 0;
 	int ret, pkt_len, i;
@@ -233,30 +233,30 @@ static void intel_pt_dump(struct intel_pt *pt __maybe_unused,
 
 	color_fprintf(stdout, color,
 		      ". ... Intel Processor Trace data: size %zu bytes\n",
-		      len);
+		      len);	/*@farzam: observed in output of perf script -D */
 
 	while (len) {
-		ret = intel_pt_get_packet(buf, len, &packet, &ctx);
+		ret = intel_pt_get_packet(buf, len, &packet, &ctx);	/*@farzam: extracts first packet in buf and saves it to &packet*/
 		if (ret > 0)
 			pkt_len = ret;
 		else
 			pkt_len = 1;
-		printf(".");
-		color_fprintf(stdout, color, "  %08x: ", pos);
+		printf(".");	/*@farzam: beginning dot of each line of pt packet in script -D*/
+		color_fprintf(stdout, color, "  %08x: ", pos);	/*@farzam: print beginning address of packet*/
 		for (i = 0; i < pkt_len; i++)
-			color_fprintf(stdout, color, " %02x", buf[i]);
+			color_fprintf(stdout, color, " %02x", buf[i]);	/*@farzam: print raw packet byte by byte*/
 		for (; i < 16; i++)
-			color_fprintf(stdout, color, "   ");
+			color_fprintf(stdout, color, "   ");	/*@farzam: to align columns - max size of raw packet is considered to be 16 bytes*/
 		if (ret > 0) {
 			ret = intel_pt_pkt_desc(&packet, desc,
-						INTEL_PT_PKT_DESC_MAX);
+						INTEL_PT_PKT_DESC_MAX);	/*@farzam: desc is a buffer of size INTEL_PT_PKT_DESC_MAX (256) to store packet description*/
 			if (ret > 0)
-				color_fprintf(stdout, color, " %s\n", desc);
+				color_fprintf(stdout, color, " %s\n", desc); /*@farzam: here desc is printed*/
 		} else {
 			color_fprintf(stdout, color, " Bad packet!\n");
 		}
 		pos += pkt_len;
-		buf += pkt_len;
+		buf += pkt_len;	/*@farzam: increase pointer to point to the beginning of the next packet*/
 		len -= pkt_len;
 	}
 }

@@ -17,7 +17,7 @@
  * @new_ctx: expected new packet context
  * @ctx_unchanged: the packet context must not change
  */
-static struct test_data {
+static struct test_data {	/*@farzam: test data with expected decoding*/
 	int len;
 	u8 bytes[INTEL_PT_PKT_MAX_SZ];
 	enum intel_pt_pkt_ctx ctx;
@@ -128,7 +128,7 @@ static struct test_data {
 	{2, {0x02, 0x23}, 0, {INTEL_PT_PSBEND, 0, 0}, 0, 0 },
 	/* Maintenance Packet */
 	{11, {0x02, 0xc3, 0x88, 1, 2, 3, 4, 5, 6, 7}, 0, {INTEL_PT_MNT, 0, 0x7060504030201}, 0, 1 },
-	/* Write Data to PT Packet */
+	/* Write Data to PT Packet */	/*@farzam: test PTWRITE packet*/
 	{6, {0x02, 0x12, 1, 2, 3, 4}, 0, {INTEL_PT_PTWRITE, 0, 0x4030201}, 0, 0 },
 	{10, {0x02, 0x32, 1, 2, 3, 4, 5, 6, 7, 8}, 0, {INTEL_PT_PTWRITE, 1, 0x807060504030201}, 0, 0 },
 	{6, {0x02, 0x92, 1, 2, 3, 4}, 0, {INTEL_PT_PTWRITE_IP, 0, 0x4030201}, 0, 0 },

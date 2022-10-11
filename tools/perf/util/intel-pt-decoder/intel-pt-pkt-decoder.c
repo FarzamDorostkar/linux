@@ -686,7 +686,7 @@ int intel_pt_get_packet(const unsigned char *buf, size_t len,
 
 int intel_pt_pkt_desc(const struct intel_pt_pkt *packet, char *buf,
 		      size_t buf_len)
-{
+{	/*@farzam: important - all snprintf are used in script -D*/
 	int ret, i, nr;
 	unsigned long long payload = packet->payload;
 	const char *name = intel_pt_pkt_name(packet->type);
@@ -698,7 +698,7 @@ int intel_pt_pkt_desc(const struct intel_pt_pkt *packet, char *buf,
 	case INTEL_PT_PSBEND:
 	case INTEL_PT_TRACESTOP:
 	case INTEL_PT_OVF:
-		return snprintf(buf, buf_len, "%s", name);
+		return snprintf(buf, buf_len, "%s", name);	/*@farzam: no payload to display*/
 	case INTEL_PT_TNT: {
 		size_t blen = buf_len;
 
@@ -754,10 +754,10 @@ int intel_pt_pkt_desc(const struct intel_pt_pkt *packet, char *buf,
 		ret = snprintf(buf, buf_len, "%s 0x%llx (NR=%d)",
 			       name, payload >> 1, nr);
 		return ret;
-	case INTEL_PT_PTWRITE:
-		return snprintf(buf, buf_len, "%s 0x%llx IP:0", name, payload);
-	case INTEL_PT_PTWRITE_IP:
-		return snprintf(buf, buf_len, "%s 0x%llx IP:1", name, payload);
+	case INTEL_PT_PTWRITE:	/*@farzam: ptwrite without FUP*/
+		return snprintf(buf, buf_len, "%s 0x%llx IP:0 farzam was here", name, payload);	/*@farzam: used in script -D*/
+	case INTEL_PT_PTWRITE_IP:	/*@farzam: ptwrite with FUP*/
+		return snprintf(buf, buf_len, "%s 0x%llx IP:1 farzam was here", name, payload); /*@farzam: used in script -D*/
 	case INTEL_PT_BEP:
 	case INTEL_PT_EXSTOP:
 		return snprintf(buf, buf_len, "%s IP:0", name);
@@ -796,5 +796,5 @@ int intel_pt_pkt_desc(const struct intel_pt_pkt *packet, char *buf,
 		break;
 	}
 	return snprintf(buf, buf_len, "%s 0x%llx (%d)",
-			name, payload, packet->count);
+			name, payload, packet->count);	/*@farzam: display all 3 members of struct intel_pt_pkt*/
 }

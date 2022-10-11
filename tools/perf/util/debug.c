@@ -160,7 +160,7 @@ static int trace_event_printer(enum binary_printer_ops op,
 	case BINARY_PRINT_DATA_BEGIN:
 		printed += fprintf(fp, ".");
 		printed += color_fprintf(fp, color, "\n. ... raw event: size %d bytes\n",
-					 event->header.size);
+					 event->header.size);	/*@farzam: observed in output of perf script -D */
 		break;
 	case BINARY_PRINT_LINE_BEGIN:
 		printed += fprintf(fp, ".");

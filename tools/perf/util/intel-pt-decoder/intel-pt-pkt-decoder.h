@@ -46,7 +46,7 @@ enum intel_pt_pkt_type {	/*@farzam: intel pt packet types*/
 	INTEL_PT_OVF,
 	INTEL_PT_MNT,
 	INTEL_PT_PTWRITE,
-	INTEL_PT_PTWRITE_IP,
+	INTEL_PT_PTWRITE_IP,	/*@farzam: ptwrite with Flow Update (FUP) packet*/
 	INTEL_PT_EXSTOP,
 	INTEL_PT_EXSTOP_IP,
 	INTEL_PT_MWAIT,
@@ -61,7 +61,7 @@ enum intel_pt_pkt_type {	/*@farzam: intel pt packet types*/
 	INTEL_PT_EVD,
 };
 
-struct intel_pt_pkt {
+struct intel_pt_pkt {	/*@farzam: representing an intel pt packet*/
 	enum intel_pt_pkt_type	type;
 	int			count;
 	uint64_t		payload;
