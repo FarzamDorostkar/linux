@@ -23,7 +23,7 @@
 
 #define INTEL_PT_VMX_NR_FLAG		1
 
-enum intel_pt_pkt_type {
+enum intel_pt_pkt_type {	/*@farzam: intel pt packet types*/
 	INTEL_PT_BAD,
 	INTEL_PT_PAD,
 	INTEL_PT_TNT,
