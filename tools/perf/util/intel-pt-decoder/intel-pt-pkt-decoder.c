@@ -690,6 +690,11 @@ int intel_pt_pkt_desc(const struct intel_pt_pkt *packet, char *buf,
 	int ret, i, nr;
 	unsigned long long payload = packet->payload;
 	const char *name = intel_pt_pkt_name(packet->type);
+	/*#farzam ---------- */
+	static unsigned long long cyc_payload_acc = 0;
+	static unsigned long long cyc_acc_1st_ptw = 0;
+	static int ptwrite_ip_count = 0;
+	/*#farzam ---------- */
 
 	switch (packet->type) {
 	case INTEL_PT_BAD:
@@ -724,6 +729,10 @@ int intel_pt_pkt_desc(const struct intel_pt_pkt *packet, char *buf,
 		blen -= ret;
 		return buf_len - blen;
 	}
+	case INTEL_PT_CYC:{
+		cyc_payload_acc += payload;
+		return snprintf(buf, buf_len, "%s 0x%llx cyc_acc: 0x%llx", name, payload, cyc_payload_acc);
+	}
 	case INTEL_PT_TIP_PGD:
 	case INTEL_PT_TIP_PGE:
 	case INTEL_PT_TIP:
@@ -731,7 +740,6 @@ int intel_pt_pkt_desc(const struct intel_pt_pkt *packet, char *buf,
 		if (!(packet->count))
 			return snprintf(buf, buf_len, "%s no ip", name);
 		__fallthrough;
-	case INTEL_PT_CYC:
 	case INTEL_PT_VMCS:
 	case INTEL_PT_MTC:
 	case INTEL_PT_MNT:
@@ -754,10 +762,18 @@ int intel_pt_pkt_desc(const struct intel_pt_pkt *packet, char *buf,
 		ret = snprintf(buf, buf_len, "%s 0x%llx (NR=%d)",
 			       name, payload >> 1, nr);
 		return ret;
-	case INTEL_PT_PTWRITE:	/*@farzam: ptwrite without FUP*/
+	case INTEL_PT_PTWRITE: {	/*@farzam: ptwrite without FUP*/
 		return snprintf(buf, buf_len, "%s 0x%llx IP:0 farzam was here", name, payload);	/*@farzam: used in script -D*/
-	case INTEL_PT_PTWRITE_IP:	/*@farzam: ptwrite with FUP*/
-		return snprintf(buf, buf_len, "%s 0x%llx IP:1 farzam was here", name, payload); /*@farzam: used in script -D*/
+	}
+	case INTEL_PT_PTWRITE_IP: {	/*@farzam: ptwrite with FUP*/
+		++ptwrite_ip_count;
+		if (ptwrite_ip_count % 2 == 1){
+			/* First PTWRITE */
+			cyc_acc_1st_ptw = cyc_payload_acc;
+			return snprintf(buf, buf_len, "%s 0x%llx IP:1 ptwrite_count: %d cyc_acc: 0x%llx", name, payload, ptwrite_ip_count, cyc_payload_acc); /*@farzam: used in script -D*/
+		}
+		return snprintf(buf, buf_len, "%s 0x%llx IP:1 ptwrite_count: %d passed_cyc: 0x%llx", name, payload, ptwrite_ip_count, cyc_payload_acc - cyc_acc_1st_ptw); /*@farzam: used in script -D*/
+	}
 	case INTEL_PT_BEP:
 	case INTEL_PT_EXSTOP:
 		return snprintf(buf, buf_len, "%s IP:0", name);
