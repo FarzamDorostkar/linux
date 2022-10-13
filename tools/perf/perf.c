@@ -5,7 +5,7 @@
  *
  * This is the main hub from which the sub-commands (perf stat,
  * perf top, perf record, perf report, etc.) are started.
- */
+ */	/*@farzam: important*/
 #include "builtin.h"
 #include "perf.h"
 

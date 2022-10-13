@@ -223,7 +223,7 @@ struct intel_pt_queue {
 
 static void intel_pt_dump(struct intel_pt *pt __maybe_unused,
 			  unsigned char *buf, size_t len)
-{	/*farzam: buf contains the whole (len bytes) pt trace data*/
+{	/*farzam: buf contains the whole (len bytes) intel pt trace data*/
 	struct intel_pt_pkt packet;
 	size_t pos = 0;
 	int ret, pkt_len, i;

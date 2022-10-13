@@ -748,7 +748,7 @@ static int perf_sample__fprintf_start(struct perf_script *script,
 				      struct thread *thread,
 				      struct evsel *evsel,
 				      u32 type, FILE *fp)
-{
+{	/*@farzam: I think this function prints the first columns of script output*/
 	struct perf_event_attr *attr = &evsel->core.attr;
 	unsigned long secs;
 	unsigned long long nsecs;
@@ -848,14 +848,14 @@ static int perf_sample__fprintf_start(struct perf_script *script,
 			else {
 				t = 0;
 			}
-			previous_time = sample->time;
+			previous_time = sample->time;	/*@farzam: current sample->time will be the next previous_time*/
 		}
-		nsecs = t;
+		nsecs = t;	/*@farzam: so t (= sample->time) is in nanoseconds*/
 		secs = nsecs / NSEC_PER_SEC;
 		nsecs -= secs * NSEC_PER_SEC;
 
-		if (symbol_conf.nanosecs)
-			printed += fprintf(fp, "%5lu.%09llu: ", secs, nsecs);
+		if (symbol_conf.nanosecs)	/*@farzam: if --ns is passed 5 digits for secs and 9 digits for nsecs*/
+			printed += fprintf(fp, "%5lu.%09llu: ", secs, nsecs);		/*@farzam: time column printed in script --itrace output, with or without -F*/
 		else {
 			char sample_time[32];
 			timestamp__scnprintf_usec(t, sample_time, sizeof(sample_time));
@@ -1781,7 +1781,7 @@ static bool ptw_is_prt(u64 val)
 
 static int perf_sample__fprintf_synth_ptwrite(struct perf_sample *sample, FILE *fp)
 {
-	struct perf_synth_intel_ptwrite *data = perf_sample__synth_ptr(sample);
+	struct perf_synth_intel_ptwrite *data = perf_sample__synth_ptr(sample);		/*@farzam:*/
 	char str[sizeof(u64) + 1] = "";
 	int len;
 	u64 val;
@@ -1794,8 +1794,8 @@ static int perf_sample__fprintf_synth_ptwrite(struct perf_sample *sample, FILE *
 		memcpy(str, &val, sizeof(val));
 		str[sizeof(val)] = 0;
 	}
-	len = fprintf(fp, " IP: %u payload: %#" PRIx64 " %s ",
-		      data->ip, val, str);
+	len = fprintf(fp, "Farzam IP: %u payload: %#" PRIx64 " %s Dorostkar",
+		      data->ip, val, str);	/*@farzam: part of script --itrace=w output, but not when -F (field flag) is passed! */
 	return len + perf_sample__fprintf_pt_spacing(len, fp);
 }
 
@@ -1936,7 +1936,7 @@ static int perf_sample__fprintf_synth(struct perf_sample *sample,
 {
 	switch (evsel->core.attr.config) {
 	case PERF_SYNTH_INTEL_PTWRITE:
-		return perf_sample__fprintf_synth_ptwrite(sample, fp);
+		return perf_sample__fprintf_synth_ptwrite(sample, fp);	/*@farzam: only call to perf_sample__fprintf_synth_ptwrite*/
 	case PERF_SYNTH_INTEL_MWAIT:
 		return perf_sample__fprintf_synth_mwait(sample, fp);
 	case PERF_SYNTH_INTEL_PWRE:
@@ -2133,10 +2133,10 @@ static void process_event(struct perf_script *script,
 	++es->samples;
 
 	perf_sample__fprintf_start(script, sample, thread, evsel,
-				   PERF_RECORD_SAMPLE, fp);
+				   PERF_RECORD_SAMPLE, fp);	/*@farzam: time field is added by this call*/
 
 	if (PRINT_FIELD(PERIOD))
-		fprintf(fp, "%10" PRIu64 " ", sample->period);
+		fprintf(fp, "%10" PRIu64 " ", sample->period);	/*@farzam: not the time field*/
 
 	if (PRINT_FIELD(EVNAME)) {
 		const char *evname = evsel__name(evsel);
@@ -2144,7 +2144,7 @@ static void process_event(struct perf_script *script,
 		if (!script->name_width)
 			script->name_width = evlist__max_name_len(script->session->evlist);
 
-		fprintf(fp, "%*s: ", script->name_width, evname ?: "[unknown]");
+		fprintf(fp, "%*s: ", script->name_width, evname ?: "[unknown]");	/*@farzam: where "ptwrite: " is printed before "IP:" in itrace=w output without -F*/
 	}
 
 	if (print_flags)
@@ -2161,7 +2161,7 @@ static void process_event(struct perf_script *script,
 	}
 
 	if (attr->type == PERF_TYPE_SYNTH && PRINT_FIELD(SYNTH))
-		perf_sample__fprintf_synth(sample, evsel, fp);
+		perf_sample__fprintf_synth(sample, evsel, fp);	/*@farzam: only call to perf_sample__fprintf_synth*/
 
 	if (PRINT_FIELD(ADDR))
 		perf_sample__fprintf_addr(sample, thread, attr, fp);
@@ -2311,7 +2311,7 @@ static int process_sample_event(struct perf_tool *tool,
 				struct perf_sample *sample,
 				struct evsel *evsel,
 				struct machine *machine)
-{
+{	/*@farzam: seems to be an important function*/
 	struct perf_script *scr = container_of(tool, struct perf_script, tool);
 	struct addr_location al;
 	struct addr_location addr_al;
@@ -2340,7 +2340,7 @@ static int process_sample_event(struct perf_tool *tool,
 				sample->time);
 			nr_unordered++;
 		}
-		last_timestamp = sample->time;
+		last_timestamp = sample->time;	/*@farzam: current timestamp is the next last_timestamp*/
 		goto out_put;
 	}
 
@@ -2463,7 +2463,7 @@ static int print_event_with_time(struct perf_tool *tool,
 				 struct perf_sample *sample,
 				 struct machine *machine,
 				 pid_t pid, pid_t tid, u64 timestamp)
-{
+{	/*@farzam: check this function*/
 	struct perf_script *script = container_of(tool, struct perf_script, tool);
 	struct perf_session *session = script->session;
 	struct evsel *evsel = evlist__id2evsel(session->evlist, sample->id);
@@ -2471,7 +2471,7 @@ static int print_event_with_time(struct perf_tool *tool,
 
 	if (evsel && !evsel->core.attr.sample_id_all) {
 		sample->cpu = 0;
-		sample->time = timestamp;
+		sample->time = timestamp;	/*@farzam:*/
 		sample->pid = pid;
 		sample->tid = tid;
 	}
@@ -2498,7 +2498,7 @@ static int print_event(struct perf_tool *tool, union perf_event *event,
 		       struct perf_sample *sample, struct machine *machine,
 		       pid_t pid, pid_t tid)
 {
-	return print_event_with_time(tool, event, sample, machine, pid, tid, 0);
+	return print_event_with_time(tool, event, sample, machine, pid, tid, 0);	/*@farzam: timestamp (last argument) is 0*/
 }
 
 static int process_comm_event(struct perf_tool *tool,
@@ -2547,7 +2547,7 @@ static int process_fork_event(struct perf_tool *tool,
 
 	return print_event_with_time(tool, event, sample, machine,
 				     event->fork.pid, event->fork.tid,
-				     event->fork.time);
+				     event->fork.time);	/*@farzam: timestamp is event->fork.time */
 }
 static int process_exit_event(struct perf_tool *tool,
 			      union perf_event *event,
@@ -2556,7 +2556,7 @@ static int process_exit_event(struct perf_tool *tool,
 {
 	/* Print before 'exit' deletes anything */
 	if (print_event_with_time(tool, event, sample, machine, event->fork.pid,
-				  event->fork.tid, event->fork.time))
+				  event->fork.tid, event->fork.time))	/*@farzam: timestamp is event->fork.time */
 		return -1;
 
 	return perf_event__process_exit(tool, event, sample, machine);
@@ -2764,8 +2764,8 @@ static int __cmd_script(struct perf_script *script)
 	/* override event processing functions */
 	if (script->show_task_events) {
 		script->tool.comm = process_comm_event;
-		script->tool.fork = process_fork_event;
-		script->tool.exit = process_exit_event;
+		script->tool.fork = process_fork_event;		/*@farzam:*/
+		script->tool.exit = process_exit_event;		/*@farzam:*/
 	}
 	if (script->show_mmap_events) {
 		script->tool.mmap = process_mmap_event;
@@ -3799,7 +3799,7 @@ int cmd_script(int argc, const char **argv)
 			.throttle	 = process_throttle_event,
 			.unthrottle	 = process_throttle_event,
 			.ordered_events	 = true,
-			.ordering_requires_timestamps = true,
+			.ordering_requires_timestamps = true,	/*@farzam:*/
 		},
 	};
 	struct perf_data data = {

@@ -2,7 +2,7 @@
 #ifndef __PERF_RECORD_H
 #define __PERF_RECORD_H
 /*
- * The linux/stddef.h isn't need here, but is needed for __always_inline used
+ * The linux/stddef.h isn't need (@farzam: typo) here, but is needed for __always_inline used
  * in files included from uapi/linux/perf_event.h such as
  * /usr/include/linux/swab.h and /usr/include/linux/byteorder/little_endian.h,
  * detected in at least musl libc, used in Alpine Linux. -acme
@@ -147,10 +147,10 @@ struct aux_sample {
 	void *data;
 };
 
-struct perf_sample {
+struct perf_sample {	/*@farzam: represent a perf sample*/
 	u64 ip;
 	u32 pid, tid;
-	u64 time;
+	u64 time;	/*@farzam: where time data comes from!*/
 	u64 addr;
 	u64 id;
 	u64 stream_id;
@@ -348,7 +348,7 @@ struct perf_synth_intel_iflag_chg {
  * raw_data is always 4 bytes from an 8-byte boundary, so subtract 4 to get
  * 8-byte alignment.
  */
-static inline void *perf_sample__synth_ptr(struct perf_sample *sample)
+static inline void *perf_sample__synth_ptr(struct perf_sample *sample)	/*@farzam:*/
 {
 	return sample->raw_data - 4;
 }

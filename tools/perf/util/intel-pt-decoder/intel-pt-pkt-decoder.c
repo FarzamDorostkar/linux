@@ -686,7 +686,7 @@ int intel_pt_get_packet(const unsigned char *buf, size_t len,
 
 int intel_pt_pkt_desc(const struct intel_pt_pkt *packet, char *buf,
 		      size_t buf_len)
-{	/*@farzam: important - all snprintf are used in script -D*/
+{	/*@farzam: important - describing a packet - all snprintf are used in script -D*/
 	int ret, i, nr;
 	unsigned long long payload = packet->payload;
 	const char *name = intel_pt_pkt_name(packet->type);
