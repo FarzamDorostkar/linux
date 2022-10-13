@@ -38,7 +38,7 @@ struct perf_sample_id {
 	u64			 period;
 };
 
-struct perf_evsel {
+struct perf_evsel {		/*@farzam:*/
 	struct list_head	 node;
 	struct perf_event_attr	 attr;
 	struct perf_cpu_map	*cpus;
