@@ -1682,7 +1682,7 @@ static void intel_pt_prep_b_sample(struct intel_pt *pt,
 	intel_pt_prep_a_sample(ptq, event, sample);
 
 	if (!pt->timeless_decoding)
-		sample->time = tsc_to_perf_time(ptq->timestamp, &pt->tc);
+		sample->time = 7;//tsc_to_perf_time(ptq->timestamp, &pt->tc);	/*@farzam: is it the answer?? YESSSS - for both w/o -F*/
 
 	sample->ip = ptq->state->from_ip;
 	sample->addr = ptq->state->to_ip;

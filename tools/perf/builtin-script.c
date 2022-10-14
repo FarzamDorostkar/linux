@@ -855,7 +855,7 @@ static int perf_sample__fprintf_start(struct perf_script *script,
 		nsecs -= secs * NSEC_PER_SEC;
 
 		if (symbol_conf.nanosecs)	/*@farzam: if --ns is passed 5 digits for secs and 9 digits for nsecs*/
-			printed += fprintf(fp, "%5lu.%09llu: ", secs, nsecs);		/*@farzam: time column printed in script --itrace output, with or without -F*/
+			printed += fprintf(fp, "%5lu.%09llu: hahaha", secs, nsecs);		/*@farzam: ***time column printed in script --itrace output, with or without -F*/
 		else {
 			char sample_time[32];
 			timestamp__scnprintf_usec(t, sample_time, sizeof(sample_time));
@@ -2133,7 +2133,7 @@ static void process_event(struct perf_script *script,
 	++es->samples;
 
 	perf_sample__fprintf_start(script, sample, thread, evsel,
-				   PERF_RECORD_SAMPLE, fp);	/*@farzam: time field is added by this call*/
+				   PERF_RECORD_SAMPLE, fp);	/*@farzam: any field before "ptwrite: " , including time, is added by this call! - for both w/o -F*/
 
 	if (PRINT_FIELD(PERIOD))
 		fprintf(fp, "%10" PRIu64 " ", sample->period);	/*@farzam: not the time field*/
@@ -2471,7 +2471,7 @@ static int print_event_with_time(struct perf_tool *tool,
 
 	if (evsel && !evsel->core.attr.sample_id_all) {
 		sample->cpu = 0;
-		sample->time = timestamp;	/*@farzam:*/
+		sample->time = timestamp;	/*@farzam: time not set here!*/
 		sample->pid = pid;
 		sample->tid = tid;
 	}
