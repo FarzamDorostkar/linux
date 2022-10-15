@@ -40,7 +40,7 @@ struct perf_sample_id {
 
 struct perf_evsel {		/*@farzam:*/
 	struct list_head	 node;
-	struct perf_event_attr	 attr;
+	struct perf_event_attr	 attr; /*@farzam:*/
 	struct perf_cpu_map	*cpus;
 	struct perf_cpu_map	*own_cpus;
 	struct perf_thread_map	*threads;
