@@ -363,7 +363,7 @@ struct intel_pt_decoder *intel_pt_decoder_new(struct intel_pt_params *params)
 	 * to go backwards. One estimate is that can be up to about 40 CPU
 	 * cycles, which is certainly less than 0x1000 TSC ticks, but accept
 	 * slippage an order of magnitude more to be on the safe side.
-	 */
+	 */		/*@farzam: TSC slip past MTC*/
 	decoder->tsc_slip = 0x10000;
 
 	intel_pt_log("timestamp: mtc_shift %u\n", decoder->mtc_shift);
@@ -790,7 +790,7 @@ struct intel_pt_calc_cyc_to_tsc_info {
  * provided by the TMA packet. Fix-up the last_mtc calculated from the TMA
  * packet by copying the missing bits from the current MTC assuming the least
  * difference between the two, and that the current MTC comes after last_mtc.
- */
+ */		/*@farzam: MTC: 8-bit payload = (CTC >> mtc_shift) & 0xff , CoreCrystalClockValue (ART value) = MTC payload << IA32_RTIT_CTL.MTCFreq */
 static void intel_pt_fixup_last_mtc(uint32_t mtc, int mtc_shift,
 				    uint32_t *last_mtc)
 {
@@ -800,12 +800,12 @@ static void intel_pt_fixup_last_mtc(uint32_t mtc, int mtc_shift,
 	*last_mtc |= mtc & mask;
 	if (*last_mtc >= mtc) {
 		*last_mtc -= first_missing_bit;
-		*last_mtc &= 0xff;
+		*last_mtc &= 0xff;	/*@farzam: & with 0xff so payload is 8 bits*/
 	}
 }
 
 static int intel_pt_calc_cyc_cb(struct intel_pt_pkt_info *pkt_info)
-{
+{	/*@farzam: I think important function in terms of calculating timestamp*/
 	struct intel_pt_decoder *decoder = pkt_info->decoder;
 	struct intel_pt_calc_cyc_to_tsc_info *data = pkt_info->data;
 	uint64_t timestamp;
@@ -983,7 +983,7 @@ static int intel_pt_calc_cyc_cb(struct intel_pt_pkt_info *pkt_info)
 
 static void intel_pt_calc_cyc_to_tsc(struct intel_pt_decoder *decoder,
 				     bool from_mtc)
-{
+{	/*@farzam: cyc to tsc*/
 	struct intel_pt_calc_cyc_to_tsc_info data = {
 		.cycle_cnt      = 0,
 		.cbr            = 0,
@@ -4050,7 +4050,7 @@ const struct intel_pt_state *intel_pt_decode(struct intel_pt_decoder *decoder)
 		/*
 		 * When using only TSC/MTC to compute cycles, IPC can be
 		 * sampled as soon as the cycle count changes.
-		 */
+		 */		/*@farzam: note on using TSC/MTC to compute IPC */
 		if (!decoder->have_cyc)
 			decoder->state.flags |= INTEL_PT_SAMPLE_IPC;
 	}
@@ -4133,7 +4133,7 @@ static bool intel_pt_step_psb(unsigned char **buf, size_t *len)
  * Return: A pointer to the last PSB in @buf if found, %NULL otherwise.
  */
 static unsigned char *intel_pt_last_psb(unsigned char *buf, size_t len)
-{
+{	/*@farzam: */
 	const char *n = INTEL_PT_PSB_STR;
 	unsigned char *p;
 	size_t k;

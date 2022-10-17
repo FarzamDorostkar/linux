@@ -316,7 +316,7 @@ static void intel_pt_tsc_ctc_ratio(u32 *n, u32 *d)
 {
 	unsigned int eax = 0, ebx = 0, ecx = 0, edx = 0;
 
-	__get_cpuid(0x15, &eax, &ebx, &ecx, &edx);
+	__get_cpuid(0x15, &eax, &ebx, &ecx, &edx);	/*@farzam: __get_cpuid example*/
 	*n = ebx;
 	*d = eax;
 }
@@ -355,7 +355,7 @@ static int intel_pt_info_fill(struct auxtrace_record *itr,
 	intel_pt_parse_terms(intel_pt_pmu->name, &intel_pt_pmu->format,
 			     "cyc", &cyc_bit);
 
-	intel_pt_tsc_ctc_ratio(&tsc_ctc_ratio_n, &tsc_ctc_ratio_d);
+	intel_pt_tsc_ctc_ratio(&tsc_ctc_ratio_n, &tsc_ctc_ratio_d);	/*@farzam: returns TSC:CTC (numerator and denominator) using cpuid*/
 
 	if (perf_pmu__scan_file(intel_pt_pmu, "max_nonturbo_ratio",
 				"%lu", &max_non_turbo_ratio) != 1)

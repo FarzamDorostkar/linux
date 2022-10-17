@@ -42,7 +42,7 @@ u64 tsc_to_perf_time(u64 cyc, struct perf_tsc_conversion *tc)
 
 int perf_read_tsc_conversion(const struct perf_event_mmap_page *pc,
 			     struct perf_tsc_conversion *tc)
-{
+{	/*@farzam: tsc perf time conversion parameters*/
 	u32 seq;
 	int i = 0;
 
