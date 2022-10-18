@@ -1682,7 +1682,7 @@ static void intel_pt_prep_b_sample(struct intel_pt *pt,
 	intel_pt_prep_a_sample(ptq, event, sample);
 
 	if (!pt->timeless_decoding)
-		sample->time = tsc_to_perf_time(ptq->timestamp, &pt->tc);	/*@farzam: time field is set here! for both w/o -F*/
+		sample->time = tsc_to_perf_time(ptq->timestamp, &pt->tc);	/*@farzam: ***time field is set here! for both w/o -F*/
 
 	sample->ip = ptq->state->from_ip;
 	sample->addr = ptq->state->to_ip;
@@ -4046,6 +4046,7 @@ static const char * const intel_pt_info_fmts[] = {
 	[INTEL_PT_SNAPSHOT_MODE]	= "  Snapshot mode       %"PRId64"\n",
 	[INTEL_PT_PER_CPU_MMAPS]	= "  Per-cpu maps        %"PRId64"\n",
 	[INTEL_PT_MTC_BIT]		= "  MTC bit             %#"PRIx64"\n",
+	[INTEL_PT_MTC_FREQ_BITS]	= "  MTC freq bits       %#"PRIx64"\n",
 	[INTEL_PT_TSC_CTC_N]		= "  TSC:CTC numerator   %"PRIu64"\n",
 	[INTEL_PT_TSC_CTC_D]		= "  TSC:CTC denominator %"PRIu64"\n",
 	[INTEL_PT_CYC_BIT]		= "  CYC bit             %#"PRIx64"\n",
@@ -4060,8 +4061,12 @@ static void intel_pt_print_info(__u64 *arr, int start, int finish)
 	if (!dump_trace)
 		return;
 
-	for (i = start; i <= finish; i++)
-		fprintf(stdout, intel_pt_info_fmts[i], arr[i]);
+	for (i = start; i <= finish; i++) {
+		const char *fmt = intel_pt_info_fmts[i];
+
+		if (fmt)
+			fprintf(stdout, fmt, arr[i]);
+	}
 }
 
 static void intel_pt_print_info_str(const char *name, const char *str)
