@@ -1303,7 +1303,7 @@ static struct intel_pt_queue *intel_pt_alloc_queue(struct intel_pt *pt,
 	params.branch_enable = intel_pt_branch_enable(pt);
 	params.ctl = intel_pt_ctl(pt);
 	params.max_non_turbo_ratio = pt->max_non_turbo_ratio;
-	params.mtc_period = intel_pt_mtc_period(pt);
+	params.mtc_period = intel_pt_mtc_period(pt);	/*@farzam: only call to intel_pt_mtc_period*/
 	params.tsc_ctc_ratio_n = pt->tsc_ctc_ratio_n;
 	params.tsc_ctc_ratio_d = pt->tsc_ctc_ratio_d;
 	params.quick = pt->synth_opts.quick;
